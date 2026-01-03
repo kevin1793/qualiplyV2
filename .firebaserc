@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "qualiply-cf9a5",
+    "prod": "qualiply-354a0"
+  },
+  "targets": {},
+  "etags": {}
+}

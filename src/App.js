@@ -9,15 +9,19 @@ import AdminLayout from "./layouts/AdminLayout";
 import AuthGate from "./auth/AuthGate";
 import RoleGate from "./auth/RoleGate";
 
-// Pages
+// Public Pages
 import Jobs from "./pages/Jobs";
-// import Apply from "./pages/Apply";
+import Apply from "./pages/Apply";
 import Login from "./pages/Login";
-import Dashboard from "./pages/admin/Dashboard";
-import JobsAdmin from "./pages/admin/Jobs";
 
 // Admin pages
-// import Applications from "./pages/admin/Applications";
+import Dashboard from "./pages/admin/Dashboard";
+import JobsAdmin from "./pages/admin/Jobs";
+import AdminJobCreate from "./pages/admin/JobCreate";
+import AdminJobView from "./pages/admin/JobView";
+import Applications from "./pages/admin/Applications";
+
+
 // import JobsAdmin from "./pages/admin/Jobs";
 // import Users from "./pages/admin/Users";
 
@@ -31,7 +35,7 @@ export default function App() {
       {/* ------------------- Public Pages ------------------- */}
       <Route element={<PublicLayout />}>
         <Route path="/" element={<Jobs />} />
-        {/* <Route path="/apply/:jobId" element={<Apply />} /> */}
+        <Route path="/apply/:jobId" element={<Apply />} />
         <Route path="/login" element={<Login />} />
       </Route>
 
@@ -48,9 +52,12 @@ export default function App() {
       >
         {/* Nested admin routes */}
         <Route index element={<Dashboard />} /> {/* default page for /admin */}
-        {/* <Route path="applications" element={<Applications />} /> */}
+        <Route path="applications" element={<Applications />} />
         <Route path="jobs" element={<JobsAdmin />} />
         {/* <Route path="users" element={<Users />} /> */}
+        <Route path="jobs/create" element={<AdminJobCreate />} />
+        <Route path="jobs/:jobId" element={<AdminJobView />} />
+
       </Route>
 
       {/* ------------------- Applicant Pages ------------------- */}

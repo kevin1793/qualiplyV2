@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { db, auth } from "../firebase";
 
 export default function RoleGate({ role, children }) {
@@ -16,17 +16,15 @@ export default function RoleGate({ role, children }) {
       }
 
       try {
-        // Query users collection by email
-        const usersRef = collection(db, "users");
-        const q = query(usersRef, where("email", "==", auth.currentUser.email));
-        const snapshot = await getDocs(q);
+        // Fetch user doc by UID
+        const userDocRef = doc(db, "users", auth.currentUser.uid);
+        const userDoc = await getDoc(userDocRef);
 
-        if (snapshot.empty) {
+        if (!userDoc.exists()) {
+          console.warn("No user document found, defaulting to denied");
           setAllowed(false);
         } else {
-          const userData = snapshot.docs[0].data();
-          const userRole = userData.role?.toLowerCase() || null;
-
+          const userRole = userDoc.data().role?.toLowerCase() || null;
           setAllowed(userRole === role.toLowerCase());
         }
       } catch (err) {

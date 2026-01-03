@@ -4,9 +4,10 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
 } from "firebase/auth";
-import { collection, query, where, getDocs, doc, setDoc  } from "firebase/firestore";
+import { collection, query, where, getDocs,getDoc, doc, setDoc  } from "firebase/firestore";
 
 import { auth, db } from "../firebase";
+
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -18,50 +19,63 @@ export default function Login() {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError("");
-  setLoading(true);
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
-  try {
-    let userCredential;
+    try {
+      let userCredential;
 
-    if (isRegistering) {
-      // Create user
-      userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      if (isRegistering) {
+        // Create user
+        userCredential = await createUserWithEmailAndPassword(auth, email, password);
 
-      // Save default role = 'applicant' in Firestore using UID
-      await setDoc(doc(db, "users", userCredential.user.uid), {
-        email,
-        role: "applicant",
-      });
-    } else {
-      // Sign in
-      userCredential = await signInWithEmailAndPassword(auth, email, password);
+        // Save default role = 'applicant' in Firestore using UID
+        await setDoc(doc(db, "users", userCredential.user.uid), {
+          email,
+          role: "applicant",
+        });
+
+        console.log("Created user doc with UID:", userCredential.user.uid);
+      } else {
+        // Sign in
+        userCredential = await signInWithEmailAndPassword(auth, email, password);
+        console.log("Signed in user UID:", userCredential.user.uid);
+      }
+
+      // Fetch user document by UID
+      console.log('fetching ref by id',userCredential.user.uid);
+      const userDocRef = doc(db, "users", userCredential.user.uid);
+      console.log('userDocRef.exists()', userDocRef);
+      console.log('getDoc userDocRef');
+      const userDoc = await getDoc(userDocRef);
+      console.log(userDoc.exists());
+
+      let role = "applicant"; // default fallback
+      if (userDoc.exists()) {
+        role = userDoc.data().role || "applicant";
+        console.log("Fetched user doc:", userDoc.data());
+      } else {
+        console.log("No user document found, defaulting role to applicant");
+      }
+
+      // Redirect based on role
+      console.log("Logged in email:", userCredential.user.email);
+      console.log("Logged in role:", role);
+
+      if (role.toLowerCase() === "admin") navigate("/admin");
+      else if (role.toLowerCase() === "applicant") navigate("/applicant");
+      else navigate("/"); // fallback
+
+    } catch (err) {
+      setError(err.message);
+      console.error("Login/Register error:", err);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    // Query Firestore users collection for document where email == logged in email
-    const usersRef = collection(db, "users");
-    const q = query(usersRef, where("email", "==", userCredential.user.email));
-    const querySnapshot = await getDocs(q);
 
-    let role = "applicant"; // fallback
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      if (data.role) role = data.role;
-    });
-
-    // Redirect based on role
-    console.log("Logged in email:", userCredential.user.email);
-    console.log("Logged in as role:", role);
-    if (role?.toLowerCase() === "admin") navigate("/admin");
-    else if (role?.toLowerCase() === "applicant") navigate("/applicant");
-    else navigate("/"); // fallback
-  } catch (err) {
-    setError(err.message);
-  } finally {
-    setLoading(false);
-  }
-};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-100">
