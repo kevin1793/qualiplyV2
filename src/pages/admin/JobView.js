@@ -12,7 +12,6 @@ export default function JobView() {
   useEffect(() => {
     const fetchJob = async () => {
       try {
-        console.log("Fetching job with ID:", jobId);
         const jobDoc = await getDoc(doc(db, "jobs", jobId));
         if (jobDoc.exists()) {
           setJob({ id: jobDoc.id, ...jobDoc.data() });

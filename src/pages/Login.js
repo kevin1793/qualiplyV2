@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  onAuthStateChanged,
 } from "firebase/auth";
-import { collection, query, where, getDocs,getDoc, doc, setDoc  } from "firebase/firestore";
-
+import { collection, query, where, getDocs, getDoc, doc, setDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 
 
@@ -15,8 +15,32 @@ export default function Login() {
   const [isRegistering, setIsRegistering] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [authUser, setAuthUser] = useState(null); // Track current auth user
 
   const navigate = useNavigate();
+
+  // Listen for auth state change (user is signed in)
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setAuthUser(user); // Set auth user to state
+        // Check if Firestore user document exists for the signed-in user
+        const userDocRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userDocRef);
+        if (!userDoc.exists()) {
+          // If no document exists for the user, create it with default role
+          await setDoc(userDocRef, {
+            email: user.email,
+            role: "default", // Default role for signed-in users who don't have a Firestore doc
+          });
+        }
+      } else {
+        setAuthUser(null); // Reset auth user on sign-out
+      }
+    });
+
+    return unsubscribe; // Clean up the listener on unmount
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,40 +57,29 @@ export default function Login() {
         // Save default role = 'applicant' in Firestore using UID
         await setDoc(doc(db, "users", userCredential.user.uid), {
           email,
-          role: "applicant",
+          role: "default",
         });
 
-        console.log("Created user doc with UID:", userCredential.user.uid);
       } else {
         // Sign in
         userCredential = await signInWithEmailAndPassword(auth, email, password);
         await auth.currentUser.getIdToken(true); // refresh to pick up admin claim
 
-        console.log("Signed in user UID:", userCredential.user.uid);
       }
 
       // Fetch user document by UID
-      console.log('fetching ref by id',userCredential.user.uid);
       const userDocRef = doc(db, "users", userCredential.user.uid);
-      console.log('userDocRef.exists()', userDocRef);
-      console.log('getDoc userDocRef');
       const userDoc = await getDoc(userDocRef);
-      console.log(userDoc.exists());
 
-      let role = "applicant"; // default fallback
+      let role = "default"; // default fallback
       if (userDoc.exists()) {
-        role = userDoc.data().role || "applicant";
-        console.log("Fetched user doc:", userDoc.data());
-      } else {
-        console.log("No user document found, defaulting role to applicant");
+        role = userDoc.data().role || "default";
       }
 
       // Redirect based on role
-      console.log("Logged in email:", userCredential.user.email);
-      console.log("Logged in role:", role);
 
       if (role.toLowerCase() === "admin") navigate("/admin");
-      else if (role.toLowerCase() === "applicant") navigate("/applicant");
+      // else if (role.toLowerCase() === "applicant") navigate("/applicant");
       else navigate("/"); // fallback
 
     } catch (err) {
@@ -85,7 +98,7 @@ export default function Login() {
         <h1 className="text-2xl font-semibold text-slate-800 mb-2">ATS Login</h1>
         <p className="text-slate-500 mb-6">
           {isRegistering
-            ? "Create an account to track your application"
+            ? "Create an account"
             : "Sign in to continue"}
         </p>
 

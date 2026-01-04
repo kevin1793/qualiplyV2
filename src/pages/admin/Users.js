@@ -79,7 +79,7 @@ export default function UsersAdmin() {
                   </button>
                 ) : (
                   <span className="text-gray-500">
-                    {user.role === "admin" ? "Admin" : "-"}
+                    {user.role === "admin" ? "None" : "-"}
                   </span>
                 )}
               </td>

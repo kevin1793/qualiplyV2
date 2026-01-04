@@ -11,7 +11,6 @@ export async function assignAdminRole(uid) {
 
     const setAdminRole = httpsCallable(functions, "setAdminRole");
     const result = await setAdminRole({ uid });
-    console.log(result.data.message);
     return result.data;
   } catch (err) {
     console.error("Error assigning admin role:", err);

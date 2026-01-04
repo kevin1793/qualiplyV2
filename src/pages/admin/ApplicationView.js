@@ -4,10 +4,11 @@ import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { ref, getDownloadURL } from "firebase/storage";
 import { storage } from "../../firebase";
+import { useNavigate } from "react-router-dom";
 
 export default function ApplicationView() {
   const { applicationId } = useParams(); // Get application ID from URL
-console.log("Application ID from route:", applicationId);
+  const navigate = useNavigate();
 
   const [app, setApp] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -44,7 +45,13 @@ console.log("Application ID from route:", applicationId);
   if (!app) return <div className="p-6 text-center text-red-600">Application not found</div>;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+      <button
+        onClick={() => navigate(-1)}
+        className="text-slate-700 hover:underline"
+      >
+        &larr; Back
+      </button>
       <div className="max-w-3xl mx-auto space-y-6">
 
         <h1 className="text-3xl font-bold text-gray-900 text-center">Application Details</h1>
@@ -65,7 +72,9 @@ console.log("Application ID from route:", applicationId);
           <h2 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-2">Certifications & Licenses</h2>
           <p><span className="font-medium">HHA Certified:</span> {app.hhaCertified}</p>
           <p>
-            <span className="font-medium">License:</span> {app.licenseNumber} ({app.licenseState}) - Exp: {app.licenseExpiration}
+            <span className="font-medium">Professional License:</span> {app.licenseNumber} ({app.licenseState})
+          </p><p>
+            <span className="font-medium">License Expiration:</span> {app.licenseExpiration || "N/A"}
           </p>
           <p><span className="font-medium">CPR Certified:</span> {app.cprCertified ? "Yes" : "No"}</p>
           <p><span className="font-medium">First Aid Certified:</span> {app.firstAidCertified ? "Yes" : "No"}</p>

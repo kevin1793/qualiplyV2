@@ -20,7 +20,6 @@ export default function Jobs() {
           ...doc.data(),
         }));
         setJobs(jobsData);
-        console.log("Fetched jobs:", jobsData);
       } catch (err) {
         console.error("Error fetching jobs:", err);
       } finally {
@@ -62,21 +61,19 @@ export default function Jobs() {
                       {job.jobTitle || job.title}
                     </h2>
                     <p className="text-slate-500">
-                    {job.location && (
-                      <span>{job.location}</span>
-                    )}
-                    {job.employmentType && (
-                      <span> | {job.employmentType.join('/')}</span>
-                    )}
-                    {job.salaryMin && job.salaryMax && (
-                      <span> | ${job.salaryMin} - ${job.salaryMax}</span>
-                    )}
-                    {job.hourlyMin && job.hourlyMax && (
-                      <span> | ${job.hourlyMin} - ${job.hourlyMax}</span>
-                    )}
-                    {!job.hourlyMin && !job.salaryMin && (
-                      <span> | Competitive Pay</span>
-                    )}
+                      {job.location && <span>{job.location}</span>}
+                      {job.employmentType && (
+                        <span> | {job.employmentType.join("/")}</span>
+                      )}
+                      {job.salaryMin && job.salaryMax && (
+                        <span> | ${job.salaryMin} - ${job.salaryMax}</span>
+                      )}
+                      {job.hourlyMin && job.hourlyMax && (
+                        <span> | ${job.hourlyMin} - ${job.hourlyMax}</span>
+                      )}
+                      {!job.hourlyMin && !job.salaryMin && (
+                        <span> | Competitive Pay</span>
+                      )}
                     </p>
                   </div>
                   <button className="text-slate-700 font-medium hover:underline">
@@ -123,10 +120,20 @@ export default function Jobs() {
                     {/* Apply button at bottom */}
                     <Link
                       to={`/apply/${job.id}`}
-                      className="mt-24 inline-block bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-slate-800 transition"
+                      className="mt-4 inline-block bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-slate-800 transition"
                     >
                       Apply
                     </Link>
+                    
+                    {/* Equal Opportunity Employer notice */}
+                    <div className="mt-6 text-sm text-gray-500">
+                      <p>
+                        <strong>Restorative Care Home Health Services</strong> is an Equal Opportunity
+                        Employer and values diversity at all levels of its organization. All qualified
+                        applicants will receive consideration for employment without regard to race,
+                        color, religion, sex, national origin, disability, or protected veteran status.
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>

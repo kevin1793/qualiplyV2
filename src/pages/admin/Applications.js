@@ -9,9 +9,8 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import { ref, getDownloadURL } from "firebase/storage";
-import { db, storage,auth } from "../../firebase";
+import { db, storage, auth } from "../../firebase";
 import { useNavigate } from "react-router-dom";
-
 
 export default function ApplicationsAdmin() {
   const [applications, setApplications] = useState([]);
@@ -30,24 +29,17 @@ export default function ApplicationsAdmin() {
   const [sortAsc, setSortAsc] = useState(true);
 
   useEffect(() => {
-  const checkAdmin = async () => {
-    if (!auth.currentUser) {
-      console.log("No user signed in");
-      return;
-    }
+    const checkAdmin = async () => {
+      if (!auth.currentUser) {
+        return;
+      }
 
-    const userRef = doc(db, "users", auth.currentUser.uid);
-    const userSnap = await getDoc(userRef);
+      const userRef = doc(db, "users", auth.currentUser.uid);
+      const userSnap = await getDoc(userRef);
+    };
 
-    if (!userSnap.exists()) {
-      console.warn("User doc does not exist:", auth.currentUser.uid);
-    } else {
-      console.log("User role:", userSnap.data().role);
-    }
-  };
-
-  checkAdmin();
-}, []);
+    checkAdmin();
+  }, []);
 
   // -----------------------
   // Fetch applications
@@ -76,7 +68,15 @@ export default function ApplicationsAdmin() {
             }
           }
 
-          return { id: docSnap.id, ...data, resumeURL };
+          // Format Date fields to display them correctly
+          const createdAt = data.createdAt ? data.createdAt.toDate() : null;
+
+          return { 
+            id: docSnap.id, 
+            ...data, 
+            resumeURL, 
+            createdAt 
+          };
         })
       );
 
@@ -198,6 +198,7 @@ export default function ApplicationsAdmin() {
               { label: "Email", field: "email" },
               { label: "Job", field: "jobTitle" },
               { label: "Status", field: "status" },
+              { label: "Date Applied", field: "createdAt" },
               { label: "Application"},
               { label: "Resume" },
               { label: "Actions" },
@@ -230,19 +231,20 @@ export default function ApplicationsAdmin() {
                   }
                   className="border px-2 py-1 rounded"
                 >
-                  {[
-                    "Submitted",
-                    "In Review",
-                    "Accepted",
-                    "Rejected",
-                  ].map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
+                  {["Submitted", "In Review", "Accepted","Shortlisted", "Rejected"].map(
+                    (s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    )
+                  )}
                 </select>
               </td>
 
+              {/* Date Created */}
+              <td className="border px-3 py-2">
+                {app.createdAt ? app.createdAt.toLocaleString() : "-"}
+              </td>
               <td className="border px-3 py-2">
                 {app.id ? (
                   <button
@@ -256,7 +258,7 @@ export default function ApplicationsAdmin() {
                 )}
               </td>
 
-
+              {/* Resume */}
               <td className="border px-3 py-2">
                 {app.resumeURL ? (
                   <a

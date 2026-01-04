@@ -2,6 +2,7 @@
   "name": "qualiply",
   "version": "0.1.0",
   "private": true,
+  "homepage": "/careers",
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.18",
     "@testing-library/dom": "^10.4.1",
