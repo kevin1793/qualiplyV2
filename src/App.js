@@ -21,6 +21,8 @@ import AdminJobCreate from "./pages/admin/JobCreate";
 import AdminJobEdit from "./pages/admin/JobEdit";
 import AdminJobView from "./pages/admin/JobView";
 import Applications from "./pages/admin/Applications";
+import ApplicationView from "./pages/admin/ApplicationView";
+import Users from "./pages/admin/Users";
 
 
 // import JobsAdmin from "./pages/admin/Jobs";
@@ -55,7 +57,8 @@ export default function App() {
         <Route index element={<Dashboard />} /> {/* default page for /admin */}
         <Route path="applications" element={<Applications />} />
         <Route path="jobs" element={<JobsAdmin />} />
-        {/* <Route path="users" element={<Users />} /> */}
+        <Route path="applications/:applicationId" element={<ApplicationView />} />
+        <Route path="users" element={<Users />} />
         <Route path="jobs/create" element={<AdminJobCreate />} />
         <Route path="jobs/edit/:jobId" element={<AdminJobEdit />} />
         <Route path="jobs/:jobId" element={<AdminJobView />} />

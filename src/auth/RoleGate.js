@@ -24,7 +24,7 @@ export default function RoleGate({ role, children }) {
           console.warn("RoleGate: user doc missing");
           setAllowed(false);
         } else {
-          setAllowed(snap.data().role === role);
+          setAllowed((snap.data().role || "").toLowerCase() === role.toLowerCase());
         }
       } catch (err) {
         console.error("RoleGate error:", err);
@@ -37,7 +37,7 @@ export default function RoleGate({ role, children }) {
     return () => unsubscribe();
   }, [role]);
 
-  if (loading) return <div className="p-6">Checking permissions…</div>;
+  if (loading) return <div className="p-6">Loading…</div>;
   if (!allowed) return <Navigate to="/" replace />;
 
   return children;

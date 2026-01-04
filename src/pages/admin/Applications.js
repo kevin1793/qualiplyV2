@@ -10,11 +10,14 @@ import {
 } from "firebase/firestore";
 import { ref, getDownloadURL } from "firebase/storage";
 import { db, storage,auth } from "../../firebase";
+import { useNavigate } from "react-router-dom";
+
 
 export default function ApplicationsAdmin() {
   const [applications, setApplications] = useState([]);
   const [filteredApps, setFilteredApps] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   // Filters and sorting
   const [filters, setFilters] = useState({
@@ -195,6 +198,7 @@ export default function ApplicationsAdmin() {
               { label: "Email", field: "email" },
               { label: "Job", field: "jobTitle" },
               { label: "Status", field: "status" },
+              { label: "Application"},
               { label: "Resume" },
               { label: "Actions" },
             ].map((col) => (
@@ -218,7 +222,6 @@ export default function ApplicationsAdmin() {
               <td className="border px-3 py-2">{app.fullName}</td>
               <td className="border px-3 py-2">{app.email}</td>
               <td className="border px-3 py-2">{app.jobTitle}</td>
-
               <td className="border px-3 py-2">
                 <select
                   value={app.status}
@@ -241,14 +244,28 @@ export default function ApplicationsAdmin() {
               </td>
 
               <td className="border px-3 py-2">
+                {app.id ? (
+                  <button
+                    onClick={() => navigate(`/admin/applications/${app.id}`)}
+                    className="text-blue-600 hover:underline"
+                  >
+                    View
+                  </button>
+                ) : (
+                  <span className="text-gray-500">No application</span>
+                )}
+              </td>
+
+
+              <td className="border px-3 py-2">
                 {app.resumeURL ? (
                   <a
                     href={app.resumeURL}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:underline"
+                    className="text-blue-600 hover:underline"
                   >
-                    View Resume
+                    View
                   </a>
                 ) : (
                   "No resume"

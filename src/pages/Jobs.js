@@ -61,9 +61,23 @@ export default function Jobs() {
                     <h2 className="text-xl font-semibold text-slate-900">
                       {job.jobTitle || job.title}
                     </h2>
+                    <p className="text-slate-500">
                     {job.location && (
-                      <p className="text-slate-500">{job.location}</p>
+                      <span>{job.location}</span>
                     )}
+                    {job.employmentType && (
+                      <span> | {job.employmentType.join('/')}</span>
+                    )}
+                    {job.salaryMin && job.salaryMax && (
+                      <span> | ${job.salaryMin} - ${job.salaryMax}</span>
+                    )}
+                    {job.hourlyMin && job.hourlyMax && (
+                      <span> | ${job.hourlyMin} - ${job.hourlyMax}</span>
+                    )}
+                    {!job.hourlyMin && !job.salaryMin && (
+                      <span> | Competitive Pay</span>
+                    )}
+                    </p>
                   </div>
                   <button className="text-slate-700 font-medium hover:underline">
                     {isExpanded ? "Hide Details" : "View Details"}
