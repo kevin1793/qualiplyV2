@@ -40,6 +40,8 @@ export default function Login() {
       } else {
         // Sign in
         userCredential = await signInWithEmailAndPassword(auth, email, password);
+        await auth.currentUser.getIdToken(true); // refresh to pick up admin claim
+
         console.log("Signed in user UID:", userCredential.user.uid);
       }
 

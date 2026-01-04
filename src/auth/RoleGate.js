@@ -1,6 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { doc, getDoc } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 import { db, auth } from "../firebase";
 
 export default function RoleGate({ role, children }) {
@@ -8,24 +9,22 @@ export default function RoleGate({ role, children }) {
   const [allowed, setAllowed] = useState(false);
 
   useEffect(() => {
-    const checkRole = async () => {
-      if (!auth.currentUser) {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
         setAllowed(false);
         setLoading(false);
         return;
       }
 
       try {
-        // Fetch user doc by UID
-        const userDocRef = doc(db, "users", auth.currentUser.uid);
-        const userDoc = await getDoc(userDocRef);
+        const userRef = doc(db, "users", user.uid);
+        const snap = await getDoc(userRef);
 
-        if (!userDoc.exists()) {
-          console.warn("No user document found, defaulting to denied");
+        if (!snap.exists()) {
+          console.warn("RoleGate: user doc missing");
           setAllowed(false);
         } else {
-          const userRole = userDoc.data().role?.toLowerCase() || null;
-          setAllowed(userRole === role.toLowerCase());
+          setAllowed(snap.data().role === role);
         }
       } catch (err) {
         console.error("RoleGate error:", err);
@@ -33,12 +32,12 @@ export default function RoleGate({ role, children }) {
       } finally {
         setLoading(false);
       }
-    };
+    });
 
-    checkRole();
+    return () => unsubscribe();
   }, [role]);
 
-  if (loading) return <div>Loading…</div>;
+  if (loading) return <div className="p-6">Checking permissions…</div>;
   if (!allowed) return <Navigate to="/" replace />;
 
   return children;

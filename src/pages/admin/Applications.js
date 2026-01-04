@@ -1,140 +1,272 @@
 import { useEffect, useState } from "react";
-import { collection, getDocs, updateDoc, doc, deleteDoc } from "firebase/firestore";
+import { niceName } from "../../utils/helper";
+import {
+  collection,
+  getDocs,
+  getDoc,
+  updateDoc,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
 import { ref, getDownloadURL } from "firebase/storage";
-import { db, storage } from "../../firebase"; // make sure storage is exported from firebase.js
-
+import { db, storage,auth } from "../../firebase";
 
 export default function ApplicationsAdmin() {
   const [applications, setApplications] = useState([]);
+  const [filteredApps, setFilteredApps] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const applicationsRef = collection(db, "applications");
+  // Filters and sorting
+  const [filters, setFilters] = useState({
+    fullName: "",
+    email: "",
+    jobTitle: "",
+    status: "",
+  });
+  const [sortField, setSortField] = useState(null);
+  const [sortAsc, setSortAsc] = useState(true);
 
+  useEffect(() => {
+  const checkAdmin = async () => {
+    if (!auth.currentUser) {
+      console.log("No user signed in");
+      return;
+    }
+
+    const userRef = doc(db, "users", auth.currentUser.uid);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      console.warn("User doc does not exist:", auth.currentUser.uid);
+    } else {
+      console.log("User role:", userSnap.data().role);
+    }
+  };
+
+  checkAdmin();
+}, []);
+
+  // -----------------------
+  // Fetch applications
+  // -----------------------
   const fetchApplications = async () => {
     setLoading(true);
+
     try {
-      const snapshot = await getDocs(applicationsRef);
+      const snapshot = await getDocs(collection(db, "applications"));
+
       const appsData = await Promise.all(
         snapshot.docs.map(async (docSnap) => {
           const data = docSnap.data();
           let resumeURL = null;
+
           if (data.resumePath) {
             try {
-              const storageRef = ref(storage, data.resumePath);
-              resumeURL = await getDownloadURL(storageRef);
+              resumeURL = await getDownloadURL(
+                ref(storage, data.resumePath)
+              );
             } catch (err) {
-              console.warn("Failed to get resume URL for", data.fullName, err);
+              console.warn(
+                `Resume fetch failed for ${data.fullName}`,
+                err
+              );
             }
           }
+
           return { id: docSnap.id, ...data, resumeURL };
         })
       );
+
       setApplications(appsData);
+      setFilteredApps(appsData);
     } catch (err) {
-      console.error("Error fetching applications:", err);
+      console.error("Failed to fetch applications:", err);
     } finally {
       setLoading(false);
     }
   };
 
+  // Initial load
   useEffect(() => {
     fetchApplications();
   }, []);
 
-  // Update status
-  const handleStatusChange = async (appId, newStatus) => {
+  // -----------------------
+  // Filtering + sorting
+  // -----------------------
+  useEffect(() => {
+    let apps = [...applications];
+
+    Object.keys(filters).forEach((key) => {
+      if (filters[key]) {
+        apps = apps.filter((app) =>
+          app[key]?.toLowerCase().includes(filters[key].toLowerCase())
+        );
+      }
+    });
+
+    if (sortField) {
+      apps.sort((a, b) => {
+        const aVal = a[sortField] || "";
+        const bVal = b[sortField] || "";
+        if (aVal < bVal) return sortAsc ? -1 : 1;
+        if (aVal > bVal) return sortAsc ? 1 : -1;
+        return 0;
+      });
+    }
+
+    setFilteredApps(apps);
+  }, [filters, sortField, sortAsc, applications]);
+
+  // -----------------------
+  // Update application status
+  // -----------------------
+  const handleStatusChange = async (id, newStatus) => {
     try {
-      const appDoc = doc(db, "applications", appId);
-      await updateDoc(appDoc, { status: newStatus });
-      fetchApplications(); // refresh list
+      const appRef = doc(db, "applications", id);
+      await updateDoc(appRef, { status: newStatus });
+
+      setApplications((prev) =>
+        prev.map((app) =>
+          app.id === id ? { ...app, status: newStatus } : app
+        )
+      );
     } catch (err) {
-      console.error("Error updating status:", err);
+      console.error("Failed to update status:", err);
     }
   };
 
+  // -----------------------
   // Delete application
-  const handleDelete = async (appId) => {
-    if (!window.confirm("Are you sure you want to delete this application?")) return;
+  // -----------------------
+  const handleDelete = async (id) => {
     try {
-      const appDoc = doc(db, "applications", appId);
-      await deleteDoc(appDoc);
-      fetchApplications();
+      await deleteDoc(doc(db, "applications", id));
+      setApplications((prev) =>
+        prev.filter((app) => app.id !== id)
+      );
     } catch (err) {
-      console.error("Error deleting application:", err);
+      console.error("Failed to delete application:", err);
     }
   };
 
-  if (loading) return <div>Loading applications…</div>;
+  // -----------------------
+  // Sorting handler
+  // -----------------------
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortAsc(!sortAsc);
+    } else {
+      setSortField(field);
+      setSortAsc(true);
+    }
+  };
+
+  if (loading) return <div>Loading…</div>;
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-6">Job Applications</h1>
-      {applications.length === 0 && <p>No applications submitted yet.</p>}
+    <div className="min-h-screen bg-slate-100 p-6">
+      <h1 className="text-2xl font-bold mb-4">Applications</h1>
 
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse border border-slate-300">
-          <thead>
-            <tr className="bg-slate-200">
-              <th className="border border-slate-300 px-3 py-2">Applicant Name</th>
-              <th className="border border-slate-300 px-3 py-2">Email</th>
-              <th className="border border-slate-300 px-3 py-2">Job Title</th>
-              <th className="border border-slate-300 px-3 py-2">Status</th>
-              <th className="border border-slate-300 px-3 py-2">Resume</th>
-              <th className="border border-slate-300 px-3 py-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {applications.map((app) => (
-              <tr key={app.id} className="hover:bg-slate-100">
-                <td className="border border-slate-300 px-3 py-2">{app.fullName}</td>
-                <td className="border border-slate-300 px-3 py-2">{app.email}</td>
-                <td className="border border-slate-300 px-3 py-2">{app.jobTitle}</td>
-                <td className="border border-slate-300 px-3 py-2">{app.status}</td>
-                <td className="border border-slate-300 px-3 py-2">
-                  {app.resumePath ? (
-                    <a
-                      href={app.resumePath}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-slate-700 hover:underline"
-                    >
-                      View Resume
-                    </a>
-                  ) : (
-                    "No resume"
-                  )}
-                </td>
-                <td className="border border-slate-300 px-3 py-2 space-x-1">
-                  <button
-                    onClick={() => handleStatusChange(app.id, "Reviewed")}
-                    className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-400"
-                  >
-                    Mark Reviewed
-                  </button>
-                  <button
-                    onClick={() => handleStatusChange(app.id, "Accepted")}
-                    className="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-500"
-                  >
-                    Accept
-                  </button>
-                  <button
-                    onClick={() => handleStatusChange(app.id, "Rejected")}
-                    className="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-500"
-                  >
-                    Reject
-                  </button>
-                  <button
-                    onClick={() => handleDelete(app.id)}
-                    className="bg-gray-400 text-white px-2 py-1 rounded hover:bg-gray-300"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {/* Filters */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        {["fullName", "email", "jobTitle", "status"].map((key) => (
+          <input
+            key={key}
+            type="text"
+            placeholder={`Filter by ${niceName(key)}`}
+            value={filters[key]}
+            onChange={(e) =>
+              setFilters((prev) => ({
+                ...prev,
+                [key]: e.target.value,
+              }))
+            }
+            className="border px-2 py-1 rounded"
+          />
+        ))}
       </div>
+
+      <table className="w-full border-collapse border border-slate-300">
+        <thead>
+          <tr>
+            {[
+              { label: "Name", field: "fullName" },
+              { label: "Email", field: "email" },
+              { label: "Job", field: "jobTitle" },
+              { label: "Status", field: "status" },
+              { label: "Resume" },
+              { label: "Actions" },
+            ].map((col) => (
+              <th
+                key={col.label}
+                className="border px-3 py-2 cursor-pointer"
+                onClick={() => col.field && handleSort(col.field)}
+              >
+                {col.label}
+                {sortField === col.field && (
+                  <span>{sortAsc ? " ↑" : " ↓"}</span>
+                )}
+              </th>
+            ))}
+          </tr>
+        </thead>
+
+        <tbody>
+          {filteredApps.map((app) => (
+            <tr key={app.id} className="hover:bg-slate-50">
+              <td className="border px-3 py-2">{app.fullName}</td>
+              <td className="border px-3 py-2">{app.email}</td>
+              <td className="border px-3 py-2">{app.jobTitle}</td>
+
+              <td className="border px-3 py-2">
+                <select
+                  value={app.status}
+                  onChange={(e) =>
+                    handleStatusChange(app.id, e.target.value)
+                  }
+                  className="border px-2 py-1 rounded"
+                >
+                  {[
+                    "Submitted",
+                    "In Review",
+                    "Accepted",
+                    "Rejected",
+                  ].map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+              </td>
+
+              <td className="border px-3 py-2">
+                {app.resumeURL ? (
+                  <a
+                    href={app.resumeURL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline"
+                  >
+                    View Resume
+                  </a>
+                ) : (
+                  "No resume"
+                )}
+              </td>
+
+              <td className="border px-3 py-2 text-center">
+                <button
+                  onClick={() => handleDelete(app.id)}
+                  className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-500"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

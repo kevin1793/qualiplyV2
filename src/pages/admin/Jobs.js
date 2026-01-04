@@ -66,6 +66,9 @@ export default function JobsAdmin() {
               Location
             </th>
             <th className="border border-slate-300 px-3 py-2 text-left">
+              Work Type
+            </th>
+            <th className="border border-slate-300 px-3 py-2 text-left">
               Status
             </th>
             <th className="border border-slate-300 px-3 py-2">
@@ -81,6 +84,9 @@ export default function JobsAdmin() {
               </td>
               <td className="border border-slate-300 px-3 py-2 text-slate-500">
                 {job.location || "-"}
+              </td>
+              <td className="border border-slate-300 px-3 py-2 text-slate-500">
+                {job.employmentType?.join(", ") || "-"}
               </td>
               <td className="border border-slate-300 px-3 py-2 text-slate-500">
                 {job.status || "-"}
@@ -110,6 +116,13 @@ export default function JobsAdmin() {
                   Draft
                 </button>
               )}
+              {/* Edit */}
+              <button
+                onClick={() => navigate(`/admin/jobs/edit/${job.id}`)}
+                className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-500"
+              >
+                Edit
+              </button>
 
               {/* Delete */}
               <button
