@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
     user: 'qualiply.ats@gmail.com',
     pass: 'klso pxan papd vnag',
   },
-});
+}); 
 
 exports.notifyAdminOnApplication = onDocumentCreated(
   {
