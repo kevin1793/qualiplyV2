@@ -143,11 +143,15 @@ export default function ApplicationsAdmin() {
   // Delete application
   // -----------------------
   const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this application? This action cannot be undone."
+    );
+
+    if (!confirmDelete) return; // user canceled
+
     try {
       await deleteDoc(doc(db, "applications", id));
-      setApplications((prev) =>
-        prev.filter((app) => app.id !== id)
-      );
+      setApplications((prev) => prev.filter((app) => app.id !== id));
     } catch (err) {
       console.error("Failed to delete application:", err);
     }

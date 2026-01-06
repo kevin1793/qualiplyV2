@@ -7,8 +7,8 @@ admin.initializeApp();
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_PASS,
+    user: 'qualiply.ats@gmail.com',
+    pass: 'klso pxan papd vnag',
   },
 });
 
@@ -21,11 +21,14 @@ exports.notifyAdminOnApplication = onDocumentCreated(
     const data = event.data.data();
 
     await transporter.sendMail({
-      from: `"ATS" <${process.env.GMAIL_USER}>`,
-      to: "admin@restorativecarehhs.com",
+      from: `"ATS" <qualiply.ats@gmail.com>`,
+      to: "kevin.d.claveria@gmail.com",
       subject: `New Job Application: ${data.jobTitle}`,
       text: `
-New application received!
+New application received! Go to the admin panel and login to review the application.
+https://restorativecarehhs.com/careers
+
+Applicant Details:
 
 Name: ${data.fullName}
 Email: ${data.email}
