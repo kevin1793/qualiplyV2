@@ -36,6 +36,14 @@ export default function Jobs() {
 
   return (
     <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="mb-6">
+        <a
+          href="https://www.restorativecarehhs.com"
+          className="text-blue-600 hover:underline font-medium"
+        >
+          &larr; Back to Restorative Care HHS
+        </a>
+      </div>
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold text-slate-900 mb-6">
           Open Positions

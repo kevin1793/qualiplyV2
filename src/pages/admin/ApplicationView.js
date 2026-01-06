@@ -109,7 +109,7 @@ export default function ApplicationView() {
         <div className="bg-white shadow rounded-lg p-6 space-y-3">
           <h2 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-2">Background & Legal</h2>
           <p><span className="font-medium">Eligible to Work in U.S.:</span> {app.eligibility ? "Yes" : "No"}</p>
-          <p><span className="font-medium">Criminal Background:</span> {app.criminalBackground ? "No convictions" : "Yes"}</p>
+          {/* <p><span className="font-medium">Criminal Background:</span> {app.criminalBackground ? "No convictions" : "Yes"}</p> */}
         </div>
 
         {/* Additional */}

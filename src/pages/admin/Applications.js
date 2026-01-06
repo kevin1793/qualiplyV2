@@ -25,8 +25,8 @@ export default function ApplicationsAdmin() {
     jobTitle: "",
     status: "",
   });
-  const [sortField, setSortField] = useState(null);
-  const [sortAsc, setSortAsc] = useState(true);
+  const [sortField, setSortField] = useState("createdAt"); // sort by createdAt by default
+  const [sortAsc, setSortAsc] = useState(false); // descending: newest first
 
   useEffect(() => {
     const checkAdmin = async () => {
@@ -98,28 +98,28 @@ export default function ApplicationsAdmin() {
   // Filtering + sorting
   // -----------------------
   useEffect(() => {
-    let apps = [...applications];
+  let apps = [...applications];
 
-    Object.keys(filters).forEach((key) => {
-      if (filters[key]) {
-        apps = apps.filter((app) =>
-          app[key]?.toLowerCase().includes(filters[key].toLowerCase())
-        );
-      }
-    });
-
-    if (sortField) {
-      apps.sort((a, b) => {
-        const aVal = a[sortField] || "";
-        const bVal = b[sortField] || "";
-        if (aVal < bVal) return sortAsc ? -1 : 1;
-        if (aVal > bVal) return sortAsc ? 1 : -1;
-        return 0;
-      });
+  Object.keys(filters).forEach((key) => {
+    if (filters[key]) {
+      apps = apps.filter((app) =>
+        app[key]?.toLowerCase().includes(filters[key].toLowerCase())
+      );
     }
+  });
 
-    setFilteredApps(apps);
-  }, [filters, sortField, sortAsc, applications]);
+  if (sortField) {
+    apps.sort((a, b) => {
+      const aVal = a[sortField] || "";
+      const bVal = b[sortField] || "";
+      if (aVal < bVal) return sortAsc ? -1 : 1;
+      if (aVal > bVal) return sortAsc ? 1 : -1;
+      return 0;
+    });
+  }
+
+  setFilteredApps(apps);
+}, [filters, sortField, sortAsc, applications]);
 
   // -----------------------
   // Update application status
@@ -243,7 +243,16 @@ export default function ApplicationsAdmin() {
 
               {/* Date Created */}
               <td className="border px-3 py-2">
-                {app.createdAt ? app.createdAt.toLocaleString() : "-"}
+                {app.createdAt
+                  ? app.createdAt.toLocaleString(undefined, {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                      hour: "numeric",
+                      minute: "numeric",
+                      hour12: true, // optional: 12-hour format
+                    })
+                  : "-"}
               </td>
               <td className="border px-3 py-2">
                 {app.id ? (
