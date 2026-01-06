@@ -957,3 +957,83 @@ For more troubleshooting guidance, see https://cloud.google.com/run/docs/trouble
     at async handle (C:\Users\user\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\release\fabricator.js:89:17)
 [error] 
 [error] Error: There was an error deploying functions
+[debug] [2026-01-06T07:40:39.218Z] ----------------------------------------------------------------------
+[debug] [2026-01-06T07:40:39.220Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\user\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only functions
+[debug] [2026-01-06T07:40:39.220Z] CLI Version:   15.1.0
+[debug] [2026-01-06T07:40:39.220Z] Platform:      win32
+[debug] [2026-01-06T07:40:39.221Z] Node Version:  v22.16.0
+[debug] [2026-01-06T07:40:39.221Z] Time:          Tue Jan 06 2026 01:40:39 GMT-0600 (Central Standard Time)
+[debug] [2026-01-06T07:40:39.221Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-01-06T07:40:40.781Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-06T07:40:40.781Z] > authorizing via signed-in user (kevin1793@gmail.com)
+[debug] [2026-01-06T07:40:40.781Z] [iam] checking project qualiply-354a0 for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2026-01-06T07:40:40.782Z] Checked if tokens are valid: true, expires at: 1767688285246
+[debug] [2026-01-06T07:40:40.782Z] Checked if tokens are valid: true, expires at: 1767688285246
+[debug] [2026-01-06T07:40:40.783Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/qualiply-354a0:testIamPermissions [none]
+[debug] [2026-01-06T07:40:40.783Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/qualiply-354a0:testIamPermissions x-goog-quota-user=projects/qualiply-354a0
+[debug] [2026-01-06T07:40:40.783Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/qualiply-354a0:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-01-06T07:40:41.025Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/qualiply-354a0:testIamPermissions 200
+[debug] [2026-01-06T07:40:41.025Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/qualiply-354a0:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-01-06T07:40:41.026Z] Checked if tokens are valid: true, expires at: 1767688285246
+[debug] [2026-01-06T07:40:41.026Z] Checked if tokens are valid: true, expires at: 1767688285246
+[debug] [2026-01-06T07:40:41.026Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/qualiply-354a0/serviceAccounts/qualiply-354a0@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2026-01-06T07:40:41.026Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/qualiply-354a0/serviceAccounts/qualiply-354a0@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2026-01-06T07:40:41.183Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/qualiply-354a0/serviceAccounts/qualiply-354a0@appspot.gserviceaccount.com:testIamPermissions 200
+[debug] [2026-01-06T07:40:41.183Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/qualiply-354a0/serviceAccounts/qualiply-354a0@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[info] 
+[info] === Deploying to 'qualiply-354a0'...
+[info] 
+[info] i  deploying functions 
+[debug] [2026-01-06T07:40:41.186Z] Checked if tokens are valid: true, expires at: 1767688285246
+[debug] [2026-01-06T07:40:41.186Z] Checked if tokens are valid: true, expires at: 1767688285246
+[debug] [2026-01-06T07:40:41.186Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/qualiply-354a0 [none]
+[debug] [2026-01-06T07:40:41.314Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/qualiply-354a0 200
+[debug] [2026-01-06T07:40:41.314Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/qualiply-354a0 {"projectNumber":"937171229186","projectId":"qualiply-354a0","lifecycleState":"ACTIVE","name":"Qualiply","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2026-01-03T02:46:05.954026Z"}
+[info] i  functions: preparing codebase default for deployment 
+[info] i  functions: ensuring required API cloudfunctions.googleapis.com is enabled... 
+[info] i  functions: ensuring required API cloudbuild.googleapis.com is enabled... 
+[info] i  artifactregistry: ensuring required API artifactregistry.googleapis.com is enabled... 
+[debug] [2026-01-06T07:40:41.316Z] Checked if tokens are valid: true, expires at: 1767688285246
+[debug] [2026-01-06T07:40:41.316Z] Checked if tokens are valid: true, expires at: 1767688285246
+[debug] [2026-01-06T07:40:41.316Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/qualiply-354a0/adminSdkConfig [none]
+[debug] [2026-01-06T07:40:41.799Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/qualiply-354a0/adminSdkConfig 200
+[debug] [2026-01-06T07:40:41.799Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/qualiply-354a0/adminSdkConfig {"projectId":"qualiply-354a0","storageBucket":"qualiply-354a0.firebasestorage.app"}
+[debug] [2026-01-06T07:40:41.799Z] Checked if tokens are valid: true, expires at: 1767688285246
+[debug] [2026-01-06T07:40:41.799Z] Checked if tokens are valid: true, expires at: 1767688285246
+[debug] [2026-01-06T07:40:41.800Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/qualiply-354a0/configs [none]
+[debug] [2026-01-06T07:40:41.991Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/qualiply-354a0/configs 200
+[debug] [2026-01-06T07:40:41.992Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/qualiply-354a0/configs {}
+[debug] [2026-01-06T07:40:41.993Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] !  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2026-01-06T07:40:42.714Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "firebase-admin": "^12.7.0",
+    "firebase-functions": "^6.0.1"
+  },
+  "devDependencies": {
+    "firebase-functions-test": "^3.1.0"
+  },
+  "private": true
+}
+[debug] [2026-01-06T07:40:42.714Z] Building nodejs source
+[info] i  functions: Loading and analyzing source code for codebase default to determine what to deploy 
+[debug] [2026-01-06T07:40:42.715Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-01-06T07:40:42.723Z] Found firebase-functions binary at 'C:\Users\user\Documents\Code\Qualiply\qualiply\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8755
+
+[debug] [2026-01-06T07:40:43.083Z] Got response from /__/functions.yaml {"endpoints":{"notifyAdminOnApplication":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","region":["us-central1"],"labels":{},"eventTrigger":{"eventType":"google.cloud.firestore.document.v1.created","eventFilters":{"database":"(default)","namespace":"(default)"},"eventFilterPathPatterns":{"document":"applications/{appId}"},"retry":false},"entryPoint":"notifyAdminOnApplication"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
